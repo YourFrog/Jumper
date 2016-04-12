@@ -71,8 +71,14 @@ public class OperationJTree extends JTree
         return tabbedPane;
     }
     
+    public DefaultMutableTreeNode getRoot() {
+        return root;
+    }
+    
     public void setRoot(DefaultMutableTreeNode root) {
+        this.root = root;
         model = new DefaultTreeModel(root);
+        
         setModel(model);
     }
 }

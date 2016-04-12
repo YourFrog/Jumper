@@ -2,8 +2,10 @@ package yourfrog.jump.resultTabbedPane.listener.popup;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
 import yourfrog.jump.db.Configuration;
 import yourfrog.jump.db.VirtualParametr;
 import yourfrog.jump.db.VirtualQuery;
@@ -45,21 +47,30 @@ public class Jump implements MouseListener
         int columnIndex = table.getSelectedColumn();
         String columnName = (String) table.getColumnModel().getColumn(columnIndex).getHeaderValue();
         
-        String[] options = new String[] {
+        String[] buttons = new String[] {
             "Dalej", "Wstecz", "Anuluj"
         };
         
-        JComboBox comboBox = new JComboBox(new String[] { "1", "2" });
+        
+        ArrayList<DefaultMutableTreeNode> options = new ArrayList();
+        
+        DefaultMutableTreeNode node = tree.getRoot();
         
         do {
-            JOptionPane.showOptionDialog(null, comboBox, "Wykonanie zapytania", 0, JOptionPane.INFORMATION_MESSAGE, null, options, null);
+            for(int i = 0; i < node.getChildCount(); i++) {
+                DefaultMutableTreeNode childrenNode = (DefaultMutableTreeNode) node.getChildAt(i);
+                options.add(childrenNode);
+            }
+            
+            JComboBox comboBox = new JComboBox(options.toArray());
+            JOptionPane.showOptionDialog(null, comboBox, "Wykonanie zapytania", 0, JOptionPane.INFORMATION_MESSAGE, null, buttons, null);
         } while( false );
         
         try {
             VirtualQueryRunner runner = getVirtualQueryRunner();
             runner.getVirtualQuery().setParamValue(columnName, value);
             
-            tabbedPane.addTab(runner.getVirtualQuery().getDisplayName(), runner.getResult(tabbedPane));
+            tabbedPane.addTab(runner.getVirtualQuery().getDisplayName(), runner.getResult(tabbedPane, tree));
             int i = 0;
         } catch( Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());

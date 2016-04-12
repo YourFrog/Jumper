@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import yourfrog.jump.operationTree.OperationJTree;
 import yourfrog.jump.resultTabbedPane.CrossTableCellRenderer;
 import yourfrog.jump.resultTabbedPane.ResultTabbedPane;
 import yourfrog.jump.resultTabbedPane.ResultTable;
@@ -46,9 +47,9 @@ public class VirtualQueryRunner
         return virtualQuery;
     }
     
-    public ResultTable getResult(ResultTabbedPane tabbedPane) throws Exception {        
+    public ResultTable getResult(ResultTabbedPane tabbedPane, OperationJTree tree) throws Exception {        
         DefaultTableModel model = new DefaultTableModel();
-        ResultTable table = new ResultTable(this, model, tabbedPane, null);
+        ResultTable table = new ResultTable(this, model, tabbedPane, tree);
         table.setShowGrid(true);
         table.setCellSelectionEnabled(true);
 
