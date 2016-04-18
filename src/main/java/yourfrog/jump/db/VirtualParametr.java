@@ -36,6 +36,14 @@ public class VirtualParametr implements JsonSerialize, Cloneable
         
         return (value != null);
     }
+    
+    public boolean IsNullValue() {
+        if( value != null && value.equals("NULL") == false ) {
+            return false;
+        }
+        
+        return defaultIsNull();
+    }
 
     public boolean defaultIsNull() {
         return (defaultValue == null) || (defaultValue.equals("NULL"));

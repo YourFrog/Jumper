@@ -64,6 +64,7 @@ public class VirtualQueryRunner
                
         initialize();
 
+        System.out.println(virtualQuery.getParseQuery());
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(virtualQuery.getParseQuery());
 
@@ -99,8 +100,8 @@ public class VirtualQueryRunner
         int cc = resultSet.getMetaData().getColumnCount();
 
         Object[] row = new Object[cc];
-        for(int i = 1; i < cc; i++) {
-            row[i - 1] = resultSet.getString(i);
+        for(int i = 0; i < cc; i++) {
+            row[i] = resultSet.getString(i + 1);
         }
 
         model.addRow(row);

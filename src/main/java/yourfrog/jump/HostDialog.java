@@ -197,7 +197,8 @@ public class HostDialog extends CentreJDialog
         configuration.setDisplayName(name.getText());
         
         try {
-            Integer.parseInt(port.getText());
+            int portNumber = Integer.parseInt(port.getText());
+            configuration.setPort(portNumber);
         } catch(Exception e) { }
     
         configuration.setHost(host.getText());

@@ -229,7 +229,7 @@ public class VirtualQueryDialog extends CentreJDialog
         int rowCount = params.getModel().getRowCount();        
         for(int i = 0; i < rowCount; i++) {
             String pName = (String) params.getModel().getValueAt(i, 0);
-            String pType = (((String) params.getModel().getValueAt(i, 1)).equals("TAK") ? "Integer" : "String");
+            String pType = (((String) params.getModel().getValueAt(i, 1)).equals("Integer") ? "Integer" : "String");
             boolean pRequire = (((String) params.getModel().getValueAt(i, 2)).equals("TAK") ? true : false);
             String pValue = (String) params.getModel().getValueAt(i, 3);
             

@@ -114,11 +114,19 @@ public class VirtualQuery implements JsonSerialize, Cloneable
             
             switch(param.getType().toLowerCase()) {
                 case "string":
-                        query = query.replace(":" + param.getKeyName(), '"' + param.getValue() + '"');
+                        if( param.IsNullValue() ) {                            
+                            query = query.replace(":" + param.getKeyName(), "NULL");
+                        } else {
+                            query = query.replace(":" + param.getKeyName(), "'" + param.getValue() + "'");
+                        }
                     break;
                     
                 case "integer":
-                        query = query.replace(":" + param.getKeyName(), param.getValue());
+                        if( param.IsNullValue() ) {                            
+                            query = query.replace(":" + param.getKeyName(), "NULL");
+                        } else {
+                            query = query.replace(":" + param.getKeyName(), param.getValue());
+                        }
                     break;
                     
                 default:
