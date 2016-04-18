@@ -85,6 +85,10 @@ public class RunVirtualQueryListener implements MouseListener
                        
             ResultTabbedPane tabPane = jTree.getTabbedPane();
             tabPane.addTab(runner.getVirtualQuery().getDisplayName(), runner.getResult(tabPane, jTree));
+            
+            for(MouseListener listener : tabPane.getMouseListeners() ) {
+                listener.mouseReleased(me);
+            }
         } catch(Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
             return;

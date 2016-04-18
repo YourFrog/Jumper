@@ -6,9 +6,6 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 import yourfrog.jump.json.JsonTree;
 import yourfrog.jump.operationTree.OperationJTree;
 
@@ -55,6 +52,7 @@ public class LoadListener implements MouseListener
             
             DefaultMutableTreeNode root = jsonTree.loadFromFile(file);
             jTree.setRoot(root);
+            jTree.sortNode();
         } catch(Exception e) {
             JOptionPane.showMessageDialog(null, "Załadowanie nie powiódło się: " + e.getMessage());
             return;
