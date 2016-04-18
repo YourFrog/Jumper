@@ -109,7 +109,18 @@ public class JsonTree
         conf.setDisplayName(json.getString("displayName"));
         conf.setHost(json.getString("host"));
         conf.setUsername(json.getString("username"));
-
+        conf.setDbname(json.getString("dbname"));
+        
+        int dbType = json.getInt("db_type");
+        
+        if( dbType == Configuration.DatabaseType.MySQL.ordinal() ) {
+            conf.setDatabaseType(Configuration.DatabaseType.MySQL);
+        }
+        
+        if( dbType == Configuration.DatabaseType.POSTGRESQL.ordinal() ) {
+            conf.setDatabaseType(Configuration.DatabaseType.POSTGRESQL);
+        }
+        
         node.setUserObject(conf);
     }
     
@@ -129,8 +140,10 @@ public class JsonTree
         for(int i = 0; i < json.length(); i++) {
             String name = json.getJSONObject(i).getString("name");
             boolean isRequired = json.getJSONObject(i).getBoolean("is_require");
+            String defaultValue = json.getJSONObject(i).getString("default_value");
+            String type = json.getJSONObject(i).getString("type");
 
-            VirtualParametr param = new VirtualParametr(name, isRequired);    
+            VirtualParametr param = new VirtualParametr(name, isRequired, type, defaultValue);    
             query.addParam(param);
         }
     }

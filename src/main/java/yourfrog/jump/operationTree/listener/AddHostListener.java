@@ -2,6 +2,7 @@ package yourfrog.jump.operationTree.listener;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import yourfrog.jump.HostDialog;
 import yourfrog.jump.db.Configuration;
 import yourfrog.jump.operationTree.OperationJTree;
 
@@ -29,12 +30,15 @@ public class AddHostListener implements MouseListener
 
     @Override
     public void mouseReleased(MouseEvent me) {
-        Configuration config = new Configuration();
-        config.setDisplayName("Dev - Senuto");
-        config.setHost("mysql.senuto.com");
-        config.setPort(3306);
         
-        jTree.addHostNode(config);
+        HostDialog dialog = new HostDialog();
+        dialog.setVisible(true);
+                
+        if( dialog.isCancel() ) {
+            return;
+        }
+        
+        jTree.addHostNode(dialog.getConfiguration());
     }
 
     @Override

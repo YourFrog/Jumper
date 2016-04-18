@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -109,17 +110,21 @@ public class VirtualQueryRunner
     {
         try {
             Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch(Exception e) {
             System.out.println("Connection Failed! Check output console");
             e.printStackTrace();
             return;
         }
         
+        
         connection = null;
 	try {
-            connection = DriverManager.getConnection("jdbc:mysql://mysql.senuto.com:3306/audits","audyt", "tAXEJIzE8O");
-	} catch (SQLException e) {
-            System.out.println("Connection Failed! Check output console");
+            String type = getDBType();
+            String dns = configuration.getHost() + ":" + configuration.getPort() + "/" + configuration.getDbname();
+            connection = DriverManager.getConnection("jdbc:" + type + "://" + dns, configuration.getUsername(), configuration.getPassword());
+	} catch(Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
             e.printStackTrace();
             return;
 	}
@@ -127,5 +132,18 @@ public class VirtualQueryRunner
 	if( connection == null ) {
             System.out.println("Failed to make connection!");
 	}
+    }
+    
+    private String getDBType() throws Exception {
+        switch(configuration.getDatabaseType()) {
+            case MySQL:
+                return "mysql";
+                
+            case POSTGRESQL:
+                return "postgresql";
+                
+            default:
+                throw new Exception("Nie obsługiwana baza danych");
+        }
     }
 }

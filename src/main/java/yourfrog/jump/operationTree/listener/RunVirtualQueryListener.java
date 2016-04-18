@@ -5,7 +5,9 @@ import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import yourfrog.jump.QueryParametrDialog;
 import yourfrog.jump.db.Configuration;
+import yourfrog.jump.db.VirtualParametr;
 import yourfrog.jump.db.VirtualQuery;
 import yourfrog.jump.db.VirtualQueryRunner;
 import yourfrog.jump.operationTree.OperationJTree;
@@ -41,6 +43,45 @@ public class RunVirtualQueryListener implements MouseListener
         
         try {
             runner = getVirtualQueryRunner();    
+            
+            VirtualQuery query = runner.getVirtualQuery();
+            if( query.getParamCount() == 1 ) {
+                String paramName = query.getParamName(0);
+                String value = JOptionPane.showInputDialog(null, "Podaj wartość parametru '" + paramName + "'");
+
+                if( value == null ) {
+                    JOptionPane.showMessageDialog(null, "Nie podano wartości dla parametru");
+                    return;
+                }
+                
+                query.setParamValue(paramName, value);
+            }
+            
+            if( query.getParamCount() >= 2 ) {
+                String[] cols = { "Parametr", "Typ", "Wartość" };
+                String[][] data = new String[query.getParamCount()][3];
+                
+                for(int i = 0; i < query.getParamCount(); i++) {
+                    VirtualParametr param = query.getParam(i);
+                    
+                    data[i][0] = param.getKeyName();
+                    data[i][1] = param.getType();
+                    
+                    if( param.defaultIsNull() ) {
+                        data[i][1] += " / null";
+                    }
+                    
+                    data[i][2] = param.getValue();
+                }
+                
+                QueryParametrDialog dialog = new QueryParametrDialog(data, cols);
+                dialog.setVisible(true);
+                
+                String[] values = dialog.getParamValues(3);
+                for(int i = 0; i < values.length; i++) {
+                    query.setParamValue(i, values[i]);
+                }
+            }
                        
             ResultTabbedPane tabPane = jTree.getTabbedPane();
             tabPane.addTab(runner.getVirtualQuery().getDisplayName(), runner.getResult(tabPane, jTree));
@@ -71,7 +112,7 @@ public class RunVirtualQueryListener implements MouseListener
         VirtualQuery virtualQuery = getVirtualQuery();
         
         VirtualQueryRunner runner = new VirtualQueryRunner();
-        runner.setVirtualQuery(virtualQuery);
+        runner.setVirtualQuery(virtualQuery.clone());
         runner.setDatabaseConfiguration(configuration);
         
         return runner;

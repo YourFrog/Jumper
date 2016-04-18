@@ -7,6 +7,7 @@ import yourfrog.jump.operationTree.listener.AddHostListener;
 import yourfrog.jump.operationTree.listener.AddSectionListener;
 import yourfrog.jump.operationTree.listener.AddVirtualQueryListener;
 import yourfrog.jump.operationTree.listener.ChangeNodeListener;
+import yourfrog.jump.operationTree.listener.DeleteNodeListener;
 import yourfrog.jump.operationTree.listener.LoadListener;
 import yourfrog.jump.operationTree.listener.RunVirtualQueryListener;
 import yourfrog.jump.operationTree.listener.SaveListener;
@@ -37,6 +38,11 @@ public class OparationJPopupMenu extends JPopupMenu
         
         menuItem = prepareChangeNode();
         add(menuItem);
+        
+        menuItem = prepareDeleteNode();
+        add(menuItem);
+        
+        addSeparator();
         
         menuItem = prepareRunVirtualQuery();
         add(menuItem);
@@ -108,6 +114,16 @@ public class OparationJPopupMenu extends JPopupMenu
         mouseListener.setTree(jTree);
         
         JMenuItem item = new JMenuItem("Edytuj");
+        item.addMouseListener(mouseListener);
+        
+        return item;
+    }
+    
+    private JMenuItem prepareDeleteNode() {
+        DeleteNodeListener mouseListener = new DeleteNodeListener();
+        mouseListener.setTree(jTree);
+        
+        JMenuItem item = new JMenuItem("Usuń");
         item.addMouseListener(mouseListener);
         
         return item;

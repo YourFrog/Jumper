@@ -3,11 +3,13 @@ package yourfrog.jump;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import yourfrog.jump.operationTree.OperationJTree;
+import yourfrog.jump.operationTree.listener.SelectedItem;
 import yourfrog.jump.resultTabbedPane.ResultTabbedPane;
+import yourfrog.jump.resultTabbedPane.listener.SelectedTab;
 
 /**
  *
@@ -26,19 +28,21 @@ public class MainFrame extends JFrame {
         
         ResultTabbedPane tabPane = new ResultTabbedPane();
         
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+        
         OperationJTree tree = new OperationJTree(tabPane);
+        tree.addMouseListener(new SelectedItem(tree, tabbedPane));
         tree.setSize(200, 400);
         tree.setFont(tree.getFont().deriveFont(10.0f));
 
         JScrollPane treeScroll = new JScrollPane(tree);
         
-        JPanel panel = new JPanel();
-        JScrollPane panelScroll = new JScrollPane(panel);
-        
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll, panelScroll);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll, tabbedPane);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(200);
         
+        tabPane.addMouseListener(new SelectedTab(tabPane, tabbedPane));
         JScrollPane treeScroll3 = new JScrollPane(tabPane);
         tree.setMinimumSize(new Dimension(200, 400));
         

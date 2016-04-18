@@ -6,17 +6,23 @@ import yourfrog.jump.json.JsonSerialize;
 /**
  * @author YourFrog
  */
-public class VirtualParametr implements JsonSerialize
+public class VirtualParametr implements JsonSerialize, Cloneable
 {
     private boolean isRequire;
     
     private String keyName;
     
     private String value;
+    
+    private String defaultValue;
 
-    public VirtualParametr(String keyName, boolean isRequire) {
+    private String type;
+    
+    public VirtualParametr(String keyName, boolean isRequire, String type, String defaultValue) {
         this.isRequire = isRequire;
         this.keyName = keyName;
+        this.defaultValue = defaultValue;
+        this.type = type;
     }
 
     public String getKeyName() {
@@ -24,16 +30,28 @@ public class VirtualParametr implements JsonSerialize
     }
     
     public boolean isCorrect() {
-        if( isRequire == false ) {
+        if( isRequire == false || defaultValue != null ) {
             return true;
         }
         
         return (value != null);
     }
+
+    public boolean defaultIsNull() {
+        return (defaultValue == null) || (defaultValue.equals("NULL"));
+    }
+    
+    public boolean isRequired() {
+        return isRequire;
+    }
+    
+    public String getType() {
+        return type;
+    }
     
     public String getValue() {
         if( value == null ) {
-            return "NULL";
+            return defaultValue;
         }
         
         return value;
@@ -49,9 +67,17 @@ public class VirtualParametr implements JsonSerialize
         
         json.put("is_require", isRequire);
         json.put("name", keyName);
+        json.put("default_value", defaultValue);
+        json.put("type", type);
         
         return json;
     }
     
+    
+    public VirtualParametr clone() {
+        VirtualParametr obj = new VirtualParametr(keyName, isRequire, type, defaultValue);
+        
+        return obj;
+    }
     
 }

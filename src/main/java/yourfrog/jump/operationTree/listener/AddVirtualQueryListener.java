@@ -4,8 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
-import yourfrog.jump.db.VirtualParametr;
-import yourfrog.jump.db.VirtualQuery;
+import yourfrog.jump.VirtualQueryDialog;
 import yourfrog.jump.operationTree.OperationJTree;
 
 /**
@@ -46,20 +45,14 @@ public class AddVirtualQueryListener implements MouseListener
             return;
         }
         
-        VirtualQuery virtualQuery = new VirtualQuery();
-        virtualQuery.setDisplayName("Wszyscy użytkownicy");
-        virtualQuery.setDescription("Pobranie wszystkich użytkowników znajdujących się w bazie");
-        virtualQuery.setQuery("SELECT * FROM users");
+        VirtualQueryDialog queryDialog = new VirtualQueryDialog();
+        queryDialog.setVisible(true);
         
-        jTree.addQueryNode(virtualQuery, node);
+        if( queryDialog.isCancel() ) {
+            return;
+        }
         
-        virtualQuery = new VirtualQuery();
-        virtualQuery.setDisplayName("Konkretny użytkownik");
-        virtualQuery.setDescription("Pobranie konkretnego użytkownika z senuto");
-        virtualQuery.setQuery("SELECT * FROM users WHERE user_id = :user_id");
-        virtualQuery.addParam(new VirtualParametr("user_id", true));
-        
-        jTree.addQueryNode(virtualQuery, node);
+        jTree.addQueryNode(queryDialog.getVirtualQuery(), node);
     }
 
     @Override

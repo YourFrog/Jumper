@@ -10,7 +10,7 @@ import yourfrog.jump.json.JsonSerialize;
  * 
  * @author YourFrog
  */
-public class VirtualQuery implements JsonSerialize
+public class VirtualQuery implements JsonSerialize, Cloneable
 {
     /**
      *  Wyświetlana nazwa zapytania
@@ -44,6 +44,10 @@ public class VirtualQuery implements JsonSerialize
         this.description = description;
     }
 
+    public void clearParams() {
+        this.params = new ArrayList();
+    }
+    
     public void setQuery(String query) {
         this.query = query;
     }
@@ -64,6 +68,35 @@ public class VirtualQuery implements JsonSerialize
         });
     }
     
+    public void setParamValue(int index, String value) {
+        params.get(index).setValue(value);
+    }
+    
+    public int getParamCount() {
+        return this.params.size();
+    }
+    
+    public VirtualParametr getParam(int index) {
+        return this.params.get(index);
+    }
+    
+    public String getParamName(int index) {
+        return this.params.get(index).getKeyName();
+    }
+    public String[] getParamsName() {
+        String[] names = new String[params.size()];
+        
+        for(int i = 0; i < params.size(); i++) {
+            names[i] = params.get(i).getKeyName();
+        }
+        
+        return names;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    
     public void addParam(VirtualParametr param) {
         params.add(param);
     }
@@ -79,7 +112,18 @@ public class VirtualQuery implements JsonSerialize
                 throw new Exception("Problem z parametrem: " + param.getKeyName());
             }
             
-            query = query.replace(":" + param.getKeyName(), param.getValue());
+            switch(param.getType().toLowerCase()) {
+                case "string":
+                        query = query.replace(":" + param.getKeyName(), '"' + param.getValue() + '"');
+                    break;
+                    
+                case "integer":
+                        query = query.replace(":" + param.getKeyName(), param.getValue());
+                    break;
+                    
+                default:
+                    throw new Exception("Nie obslugiwany typ danych '" + param.getType() + '"');
+            }
         }
         
         return query;
@@ -111,5 +155,19 @@ public class VirtualQuery implements JsonSerialize
         }
         
         return json;
+    }
+    
+    public VirtualQuery clone() {
+        VirtualQuery obj = new VirtualQuery();
+        
+        obj.setDisplayName(displayName);
+        obj.setDescription(description);
+        obj.setQuery(query);
+        
+        for(int i = 0; i < params.size(); i++) {
+            obj.addParam(params.get(i).clone());
+        }
+        
+        return obj;
     }
 }

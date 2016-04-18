@@ -63,6 +63,10 @@ public class ResultTable extends JTable
         return map;
     }
     
+    public VirtualQueryRunner getRunner() {
+        return runner;
+    }
+    
     public void setNotes(JTextArea notes) {
         this.notes = notes;
         

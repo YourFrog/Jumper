@@ -6,24 +6,46 @@ import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import yourfrog.jump.db.Configuration;
-import yourfrog.jump.db.VirtualParametr;
 import yourfrog.jump.db.VirtualQuery;
 import yourfrog.jump.db.VirtualQueryRunner;
 import yourfrog.jump.operationTree.OperationJTree;
 import yourfrog.jump.resultTabbedPane.ResultTabbedPane;
 import yourfrog.jump.resultTabbedPane.ResultTable;
+import yourfrog.jump.resultTabbedPane.listener.popup.jump.NodeNotFoundException;
 
 /**
  * @author YourFrog
  */
 public class Jump implements MouseListener
 {
+    final int BUTTON_NEXT = 0;
+    final int BUTTON_BACK = 1;
+    final int BUTTON_CANCEL = 2;
+    
+    /**
+     *  Tabela do której zapisujemy dane z wyniku zapytania
+     */
     private ResultTable table;
 
     private ResultTabbedPane tabbedPane;
     
     private OperationJTree tree;
+        
+    private VirtualQueryRunner runner;
+    
+    /**
+     *  Aktualnie zaznaczony node
+     */
+    private DefaultMutableTreeNode actualNode;
+    
+    /**
+     *  Guziki wyświetlane przy wyborze przez klienta
+     */
+    private String[] buttons = new String[] {
+        "Dalej", "Wstecz", "Anuluj"
+    };
     
     public Jump(ResultTable table, ResultTabbedPane tabbedPane, OperationJTree tree) {
         this.table = table;
@@ -39,53 +61,96 @@ public class Jump implements MouseListener
     public void mousePressed(MouseEvent me) {
         
     }
-
+    
     @Override
-    public void mouseReleased(MouseEvent me) {
-        String value = table.getSelectionValue();
-        
-        int columnIndex = table.getSelectedColumn();
-        String columnName = (String) table.getColumnModel().getColumn(columnIndex).getHeaderValue();
-        
-        String[] buttons = new String[] {
-            "Dalej", "Wstecz", "Anuluj"
-        };
-        
-        
-        ArrayList<DefaultMutableTreeNode> options = new ArrayList();
-        
-        DefaultMutableTreeNode node = tree.getRoot();
+    public void mouseReleased(MouseEvent me) { 
+        try {
+            loadQueryNode();
+            loadRunner();
+            setQueryParams();
+            
+            tabbedPane.addTab(runner, tree);
+        } catch(NodeNotFoundException e) {
+            // Nic nie robimy nie wybrano node'a z zapytaniem
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return;            
+        }
+    }
+    
+    private void loadQueryNode() throws NodeNotFoundException {
+        actualNode = tree.getRoot();
         
         do {
-            for(int i = 0; i < node.getChildCount(); i++) {
-                DefaultMutableTreeNode childrenNode = (DefaultMutableTreeNode) node.getChildAt(i);
-                options.add(childrenNode);
+            ArrayList<DefaultMutableTreeNode> options = getOptions();
+            
+            JComboBox comboBox = null;
+            int returnVal;
+            
+            if( options.isEmpty() ) {
+                JOptionPane.showMessageDialog(null, "Nie odnaleziono zdefiniowanych potomków");
+                returnVal = 1;
+            } else {
+                comboBox = new JComboBox(options.toArray());
+                returnVal = JOptionPane.showOptionDialog(null, comboBox, "Wybierz zapytanie", 0, JOptionPane.INFORMATION_MESSAGE, null, buttons, null);
             }
             
-            JComboBox comboBox = new JComboBox(options.toArray());
-            JOptionPane.showOptionDialog(null, comboBox, "Wykonanie zapytania", 0, JOptionPane.INFORMATION_MESSAGE, null, buttons, null);
-        } while( false );
+            actualNode = getSelectedNode(returnVal, comboBox, actualNode);            
+            if( actualNode.getUserObject() instanceof VirtualQuery ) {
+                break;
+            }
+        } while( true );
+    }
+    
+    private DefaultMutableTreeNode getSelectedNode(int value, JComboBox comboBox, DefaultMutableTreeNode node) throws NodeNotFoundException {
+        if( value == BUTTON_NEXT ) {
+            int selectedIndex = comboBox.getSelectedIndex();
+            return (DefaultMutableTreeNode) node.getChildAt(selectedIndex);
+        }
         
-        try {
-            VirtualQueryRunner runner = getVirtualQueryRunner();
-            runner.getVirtualQuery().setParamValue(columnName, value);
-            
-            tabbedPane.addTab(runner.getVirtualQuery().getDisplayName(), runner.getResult(tabbedPane, tree));
-            int i = 0;
-        } catch( Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
-            return;
+        if( value == BUTTON_BACK ) {
+            TreeNode parent = node.getParent();
+            if( parent != null ) {
+                return(DefaultMutableTreeNode) parent; 
+            }
+        }
+        
+        throw new NodeNotFoundException();
+    }
+
+    private void setQueryParams() {
+        String value = table.getSelectionValue();
+        String[] names = runner.getVirtualQuery().getParamsName();
+
+        if( names.length == 1 ) {
+            runner.getVirtualQuery().setParamValue(names[0], value);            
+        }
+        
+        if( names.length > 1 ) {
+            buttons = new String[] {
+                "Zatwierdź", "Anuluj"
+            };
+
+            JComboBox comboBox = new JComboBox(names);
+            int returnVal = JOptionPane.showOptionDialog(null, comboBox, "Wybierz parametr", 0, JOptionPane.INFORMATION_MESSAGE, null, buttons, null);
+
+            if( returnVal == 0 ) {
+                int index = comboBox.getSelectedIndex();
+                runner.getVirtualQuery().setParamValue(names[index], value);
+            }   
         }
     }
 
-    @Override
-    public void mouseEntered(MouseEvent me) {
-        
-    }
+    private ArrayList<DefaultMutableTreeNode> getOptions() {
+        ArrayList<DefaultMutableTreeNode> options = new ArrayList();
 
-    @Override
-    public void mouseExited(MouseEvent me) {
-        
+        int cc = actualNode.getChildCount();
+        for(int i = 0; i < cc; i++) {
+            DefaultMutableTreeNode childrenNode = (DefaultMutableTreeNode) actualNode.getChildAt(i);
+            options.add(childrenNode);
+        }
+
+        return options;
     }
     
     /**
@@ -94,33 +159,23 @@ public class Jump implements MouseListener
      * @return
      * @throws Exception 
      */
-    private VirtualQueryRunner getVirtualQueryRunner() throws Exception {
-        Configuration configuration = getDatabaseConfiguration();
-        VirtualQuery virtualQuery = getVirtualQuery();
+    private void loadRunner() throws Exception {
+        VirtualQuery virtualQuery = (VirtualQuery) actualNode.getUserObject();
+        Configuration configuration = tree.getParentDatabaseConfiguration(actualNode);
         
-        VirtualQueryRunner runner = new VirtualQueryRunner();
-        runner.setVirtualQuery(virtualQuery);
+         
+        runner = new VirtualQueryRunner();
+        runner.setVirtualQuery(virtualQuery.clone());
         runner.setDatabaseConfiguration(configuration);
-        
-        return runner;
     }
     
-    private Configuration getDatabaseConfiguration() throws Exception {
-        Configuration config = new Configuration();
-        config.setDisplayName("Dev - Senuto");
-        config.setHost("mysql.senuto.com");
-        config.setPort(3306);
+    @Override
+    public void mouseEntered(MouseEvent me) {
         
-        return config;
     }
-    
-    private VirtualQuery getVirtualQuery() throws Exception {
-        VirtualQuery virtualQuery = new VirtualQuery();
-        virtualQuery.setDisplayName("Konkretny użytkownik");
-        virtualQuery.setDescription("Pobranie konkretnego użytkownika z senuto");
-        virtualQuery.setQuery("SELECT * FROM users WHERE user_id = :user_id");
-        virtualQuery.addParam(new VirtualParametr("user_id", true));
+
+    @Override
+    public void mouseExited(MouseEvent me) {
         
-        return virtualQuery;
     }
 }

@@ -3,6 +3,7 @@ package yourfrog.jump.operationTree;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import yourfrog.jump.db.Configuration;
 import yourfrog.jump.db.VirtualQuery;
 import yourfrog.jump.resultTabbedPane.ResultTabbedPane;
@@ -80,5 +81,24 @@ public class OperationJTree extends JTree
         model = new DefaultTreeModel(root);
         
         setModel(model);
+    }
+    
+    public Configuration getParentDatabaseConfiguration(TreeNode node) {
+        do {
+            node = node.getParent();
+            
+            if( node == null || (node instanceof DefaultMutableTreeNode) == false ) {
+                break;
+            }
+            
+            DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) node;
+            Object obj = mutableNode.getUserObject();
+            
+            if( obj instanceof Configuration ) {
+                return (Configuration) obj;
+            }
+        } while( true );
+        
+        return null;
     }
 }
