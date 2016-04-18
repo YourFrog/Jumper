@@ -40,6 +40,7 @@ public class DeleteNodeListener implements MouseListener
         
         node.removeFromParent();
         ((DefaultTreeModel) jTree.getModel()).reload();
+        jTree.sortNode();
     }
 
     @Override

@@ -3,6 +3,8 @@ package yourfrog.jump.resultTabbedPane.listener.popup;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -104,8 +106,8 @@ public class Jump implements MouseListener
     
     private DefaultMutableTreeNode getSelectedNode(int value, JComboBox comboBox, DefaultMutableTreeNode node) throws NodeNotFoundException {
         if( value == BUTTON_NEXT ) {
-            int selectedIndex = comboBox.getSelectedIndex();
-            return (DefaultMutableTreeNode) node.getChildAt(selectedIndex);
+            DefaultMutableTreeNode selectedValue = (DefaultMutableTreeNode) comboBox.getSelectedItem();
+            return selectedValue;
         }
         
         if( value == BUTTON_BACK ) {
@@ -149,6 +151,13 @@ public class Jump implements MouseListener
             DefaultMutableTreeNode childrenNode = (DefaultMutableTreeNode) actualNode.getChildAt(i);
             options.add(childrenNode);
         }
+
+        Collections.sort(options, new Comparator<DefaultMutableTreeNode>() {
+            @Override
+            public int compare(DefaultMutableTreeNode t, DefaultMutableTreeNode t1) {
+                return t.getUserObject().toString().compareTo(t1.getUserObject().toString());
+            }
+        });
 
         return options;
     }

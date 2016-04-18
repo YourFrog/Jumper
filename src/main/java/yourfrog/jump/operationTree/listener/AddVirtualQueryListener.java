@@ -53,6 +53,7 @@ public class AddVirtualQueryListener implements MouseListener
         }
         
         jTree.addQueryNode(queryDialog.getVirtualQuery(), node);
+        jTree.sortNode();
     }
 
     @Override

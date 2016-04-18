@@ -1,5 +1,8 @@
 package yourfrog.jump.operationTree;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -100,5 +103,35 @@ public class OperationJTree extends JTree
         } while( true );
         
         return null;
+    }
+    
+    public void sortNode() {
+        sort(root);
+    }
+    
+    private void sort(DefaultMutableTreeNode root) {
+        int cc = root.getChildCount();
+        ArrayList<DefaultMutableTreeNode> list = new ArrayList();
+        
+        for(int i = 0; i < cc; i++) {
+            list.add((DefaultMutableTreeNode) root.getChildAt(i));
+        }
+        
+        Collections.sort(list, new Comparator<DefaultMutableTreeNode>() {
+            @Override
+            public int compare(DefaultMutableTreeNode t, DefaultMutableTreeNode t1) {
+                return t.getUserObject().toString().compareToIgnoreCase(t1.getUserObject().toString());
+            }
+        });
+        
+        for(int i = 0; i < cc; i++) {
+            sort((DefaultMutableTreeNode) root.getChildAt(i));
+        }
+        
+        root.removeAllChildren();
+        
+        for(int i = 0; i < cc; i++) {
+            root.add(list.get(i));
+        }
     }
 }

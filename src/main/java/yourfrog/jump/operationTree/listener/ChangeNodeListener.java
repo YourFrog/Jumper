@@ -50,6 +50,7 @@ public class ChangeNodeListener implements MouseListener
             
             Configuration configuration = hostDialog.getConfiguration();
             node.setUserObject(configuration);
+            jTree.sortNode();
             
             return;
         }
@@ -69,6 +70,7 @@ public class ChangeNodeListener implements MouseListener
                 event.mouseReleased(me);
             }
             
+            jTree.sortNode();
             return;
         }
         
@@ -81,6 +83,7 @@ public class ChangeNodeListener implements MouseListener
             
             node.setUserObject(answer);
             ((DefaultTreeModel) jTree.getModel()).nodeChanged(node);
+            jTree.sortNode();
         }
     }
 

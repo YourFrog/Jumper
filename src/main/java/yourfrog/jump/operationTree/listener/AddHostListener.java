@@ -39,6 +39,7 @@ public class AddHostListener implements MouseListener
         }
         
         jTree.addHostNode(dialog.getConfiguration());
+        jTree.sortNode();
     }
 
     @Override

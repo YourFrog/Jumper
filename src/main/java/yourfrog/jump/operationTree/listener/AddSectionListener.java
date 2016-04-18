@@ -44,6 +44,7 @@ public class AddSectionListener implements MouseListener
         }
         
         jTree.addSectionNode(sectionName, node);
+        jTree.sortNode();
     }
 
     @Override
