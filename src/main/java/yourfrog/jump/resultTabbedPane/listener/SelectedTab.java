@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import yourfrog.jump.QueryInformationPanel;
 import yourfrog.jump.db.VirtualQuery;
 import yourfrog.jump.resultTabbedPane.ResultTabbedPane;
 import yourfrog.jump.resultTabbedPane.ResultTable;
@@ -52,24 +53,9 @@ public class SelectedTab implements MouseListener
         pane.setSelectedIndex(index);
     }
 
-    private void addQueryInformationTab(VirtualQuery query) {
-        
-        String text = "";
-        text += "Nazwa: \n" + query.getDisplayName() + "\n\n";
-        text += "Opis: \n" + query.getDescription() + "\n\n";
-        
-        try {
-            text += "Query: \n " + query.getParseQuery();
-        } catch(Exception e) {
-            text += "Query: \n " + query.getQuery();
-        }
-        
-        JTextArea textarea = new JTextArea();
-        textarea.setText(text);
-        
-        JScrollPane scrollPane = new JScrollPane(textarea);
-        
-        pane.addTab(this.TAB_TITLE, scrollPane);
+    private void addQueryInformationTab(VirtualQuery query) {       
+        QueryInformationPanel panel = new QueryInformationPanel(query);
+        pane.addTab(TAB_TITLE, panel);
     }
     
     private void deleteQueryInformationTab() {

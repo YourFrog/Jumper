@@ -90,7 +90,7 @@ public class RunVirtualQueryListener implements MouseListener
                 listener.mouseReleased(me);
             }
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
             return;
         }
     }

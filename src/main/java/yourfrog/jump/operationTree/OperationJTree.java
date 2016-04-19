@@ -1,5 +1,7 @@
 package yourfrog.jump.operationTree;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +43,8 @@ public class OperationJTree extends JTree
         
         setComponentPopupMenu(popupMenu);
         setModel(model);
+                
+        this.addKeyListener(new OperationTreeKeyListener(this));
     }
     
     public DefaultMutableTreeNode getSeletedNode() {

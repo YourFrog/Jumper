@@ -1,5 +1,8 @@
 package yourfrog.jump.operationTree;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -18,6 +21,10 @@ import yourfrog.jump.operationTree.listener.SaveListener;
 public class OparationJPopupMenu extends JPopupMenu
 {
     private OperationJTree jTree;
+    
+    private JMenuItem runQueryMenuItem;
+    
+    private JMenuItem loadTreeMenuItem;
     
     public OparationJPopupMenu(OperationJTree jTree) {
         this.jTree = jTree;
@@ -45,6 +52,7 @@ public class OparationJPopupMenu extends JPopupMenu
         addSeparator();
         
         menuItem = prepareRunVirtualQuery();
+        runQueryMenuItem = menuItem;
         add(menuItem);
         
         addSeparator();
@@ -53,6 +61,7 @@ public class OparationJPopupMenu extends JPopupMenu
         add(menuItem);
         
         menuItem = prepareLoad();
+        loadTreeMenuItem = menuItem;
         add(menuItem);
     }
     
@@ -129,14 +138,26 @@ public class OparationJPopupMenu extends JPopupMenu
         return item;
     }
     
-    private JMenuItem prepareRunVirtualQuery()       
-    {
+    private JMenuItem prepareRunVirtualQuery() {
         RunVirtualQueryListener mouseListener = new RunVirtualQueryListener();
         mouseListener.setTree(jTree);
         
         JMenuItem item = new JMenuItem("Uruchom zapytanie");
         item.addMouseListener(mouseListener);
-        
         return item; 
+    }
+    
+    public void executeRunQuery(Component source) {
+        MouseEvent me = new MouseEvent(source, 0, 0, 0, 0, 0, 0, true);
+        for(MouseListener listener : runQueryMenuItem.getMouseListeners() ) {
+            listener.mouseReleased(me);
+        }
+    }
+    
+    public void executeLoadTree(Component source) {
+        MouseEvent me = new MouseEvent(source, 0, 0, 0, 0, 0, 0, true);
+        for(MouseListener listener : loadTreeMenuItem.getMouseListeners() ) {
+            listener.mouseReleased(me);
+        }
     }
 }

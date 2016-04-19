@@ -2,7 +2,6 @@ package yourfrog.jump;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultCellEditor;
@@ -17,7 +16,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
-import jsyntaxpane.DefaultSyntaxKit;
 import yourfrog.jump.db.VirtualParametr;
 import yourfrog.jump.db.VirtualQuery;
 
@@ -95,8 +93,6 @@ public class VirtualQueryDialog extends CentreJDialog
         
         description = new JTextArea(3, 35);
         add(description);
-        
-        DefaultSyntaxKit.initKit();
         
         query = new JEditorPane();
         

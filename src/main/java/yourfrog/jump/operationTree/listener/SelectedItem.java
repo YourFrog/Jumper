@@ -1,11 +1,15 @@
 package yourfrog.jump.operationTree.listener;
 
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.tree.DefaultMutableTreeNode;
+import yourfrog.jump.QueryInformationPanel;
 import yourfrog.jump.db.Configuration;
 import yourfrog.jump.db.VirtualQuery;
 import yourfrog.jump.operationTree.OperationJTree;
@@ -66,17 +70,9 @@ public class SelectedItem implements MouseListener
     }
     
     private void addQueryInformationTab(VirtualQuery query) {
+        QueryInformationPanel panel = new QueryInformationPanel(query);
         
-        String text = "";
-        text += "Nazwa: \n" + query.getDisplayName() + "\n\n";
-        text += "Opis: \n" + query.getDescription() + "\n\n";
-        text += "Query: \n" + query.getQuery();
-        
-        JTextArea textarea = new JTextArea();
-        textarea.setText(text);
-        
-        JScrollPane scrollPane = new JScrollPane(textarea);
-        pane.addTab(this.TAB_TITLE, scrollPane);
+        pane.addTab(TAB_TITLE, panel);
     }
     
     private void addConfigurationInformationTab(Configuration conf) {
